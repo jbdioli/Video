@@ -7,5 +7,21 @@
 </ion-header>
 
 <ion-content>
-  <input type="file" multiple name="photo" (change)="onFileChosen($event)" #filePicker />
+
+  <p>{{videoDetail?.name}}</p>
+  <p>{{videoDetail?.duration}}</p>
+  <p>{{videoDetail?.type}}</p>
+  <p>{{videoDetail?.videoWidth}}</p>
+  <p>{{videoDetail?.videoHeight}}</p>
+
+  <input type="file" (change)="onFileChosen($event)"/>
+
+
+  <video width="{{videoDetail.videoWidth}}" height="{{videoDetail.videoHeight}}" controls *ngIf="videoDetail.file">
+    <source [src]="videoDetail.file" type="video/mp4">
+    unsupported video
+  </video>
+
+
+
 </ion-content>
