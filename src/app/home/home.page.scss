@@ -1,5 +1,17 @@
+* {
+    margin: 0;
+    padding: 0;
+}
 
 input[type='file'] {
-    margin: 20px;
-    // display: none;
+    display: none;
+}
+
+.wrapper {
+    margin: 0 auto;
+    max-width: 40em;
+}
+
+video {
+    width: 100%;
 }

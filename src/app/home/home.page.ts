@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 
 export interface VideoDetail {
   name?: string;
@@ -8,6 +8,7 @@ export interface VideoDetail {
   videoHeight?: number;
   videoWidth?: number;
   file?: File;
+  dataUrl?: string;
 }
 
 @Component({
@@ -16,11 +17,18 @@ export interface VideoDetail {
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+  @ViewChild('filePicker', {static: false}) filePickerRef: ElementRef<HTMLInputElement>;
 
   videoBuffer: File;
   videoDetail: VideoDetail = {};
 
+  flag = false;
+
   constructor() {}
+
+  onPickVideo() {
+    this.filePickerRef.nativeElement.click();
+  }
 
 
   onFileChosen(ev: Event) {
@@ -31,44 +39,51 @@ export class HomePage {
     this.videoBuffer = files[0];
     console.log('Video Buffer : ', this.videoBuffer);
 
-    const type = this.videoBuffer.type;
-    console.log('Type : ', type);
-
-    const fileReader = new FileReader();
-
     this.videoDetail.name = this.videoBuffer.name;
     this.videoDetail.type = this.videoBuffer.type;
     this.videoDetail.size = this.videoBuffer.size;
     this.videoDetail.file = this.videoBuffer;
 
+    this.videoMetadataReader(this.videoBuffer, this.videoDetail);
+
+    this.convertToDataUrl(this.videoBuffer, this.videoDetail);
+  }
+
+  // Metadata video reader
+  videoMetadataReader(buffer: File, storage: VideoDetail) {
+    const fileReader = new FileReader();
+    const type = this.videoBuffer.type;
 
     fileReader.onload = () => {
       const blob = new Blob([fileReader.result], {type});
-      console.log('Blob :', blob);
-      // this.videoDetail.file = blob;
 
       const url = (URL || webkitURL).createObjectURL(blob);
       const video = document.createElement('video');  // create video element
-      console.log('video document :', video);
 
       video.preload = 'metadata';                     // preload setting
       video.addEventListener('loadedmetadata', () => {
-        this.videoDetail.duration = video.duration;
+        storage.duration = video.duration;
 
-        this.videoDetail.videoHeight = video.videoHeight;
-        this.videoDetail.videoWidth = video.videoWidth;
-        console.log('duration :', video.duration);
-        console.log('height : ', video.videoHeight);
-        console.log('Width : ', video.videoWidth);
+        storage.videoHeight = video.videoHeight;
+        storage.videoWidth = video.videoWidth;
       });
 
 
       video.src = url; // start video load
 
     };
+    fileReader.readAsArrayBuffer(buffer);
+  }
 
-    fileReader.readAsArrayBuffer(this.videoBuffer);
-
+  // File to dataUrl
+  convertToDataUrl(buffer: File, storage: VideoDetail) {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      const dataUrl = fileReader.result.toString();
+      storage.dataUrl = dataUrl;
+      this.flag = true;
+    };
+    fileReader.readAsDataURL(buffer);
   }
 
 }

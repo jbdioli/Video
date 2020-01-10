@@ -8,19 +8,32 @@
 
 <ion-content>
 
-  <p>{{videoDetail?.name}}</p>
-  <p>{{videoDetail?.duration}}</p>
-  <p>{{videoDetail?.type}}</p>
-  <p>{{videoDetail?.videoWidth}}</p>
-  <p>{{videoDetail?.videoHeight}}</p>
+  <ion-button
+    expand="block"
+    color="primary"
+    (click)="onPickVideo()"
+  >
+    <ion-icon name="videocam" slot="start"></ion-icon>
+    <ion-label>Select video</ion-label>
+  </ion-button>
 
-  <input type="file" (change)="onFileChosen($event)"/>
+  <input type="file" (change)="onFileChosen($event)" #filePicker/>
 
 
-  <video width="{{videoDetail.videoWidth}}" height="{{videoDetail.videoHeight}}" controls *ngIf="videoDetail.file">
-    <source [src]="videoDetail.file" type="video/mp4">
+
+
+<div class="wrapper" *ngIf="flag">
+  <video controls >
+    <source [src]="videoDetail.dataUrl" type="video/mp4">
     unsupported video
   </video>
+</div>
+
+<div *ngIf="videoDetail.name">
+  <p>Video name : {{videoDetail.name}} of {{videoDetail.duration}} seconde</p>
+  <p>{{videoDetail.type}}, {{videoDetail.videoWidth}}px by {{videoDetail.videoHeight}}px</p>
+</div>
+
 
 
 
