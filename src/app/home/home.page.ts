@@ -66,17 +66,16 @@ export class HomePage {
       video.addEventListener('loadedmetadata', () => {
         detail.duration = video.duration;
 
-
         detail.videoHeight = video.videoHeight;
         detail.videoWidth = video.videoWidth;
 
 
-        
+        // get first video frame
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
 
-        
+
         canvas.height = video.videoHeight;
         canvas.width = video.videoWidth;
 
@@ -89,15 +88,13 @@ export class HomePage {
         console.log('img :', img);
       });
 
-
-
       video.src = url; // start video load
 
     };
     fileReader.readAsArrayBuffer(buffer);
   }
 
-  // File to dataUrl
+  // File to string
   convertToDataString(buffer: File, detail: VideoDetail) {
     const fileReader = new FileReader();
     fileReader.onload = () => {
