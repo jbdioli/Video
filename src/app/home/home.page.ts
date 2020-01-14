@@ -61,9 +61,8 @@ export class HomePage {
       const url = (URL || webkitURL).createObjectURL(blob);
       const video = document.createElement('video');  // create video element
 
-
-      video.preload = 'metadata';                     // preload setting
-      video.addEventListener('loadedmetadata', () => {
+      video.preload = 'auto';                     // preload setting
+      video.addEventListener('loadeddata', () => {
         detail.duration = video.duration;
 
         detail.videoHeight = video.videoHeight;
@@ -80,7 +79,7 @@ export class HomePage {
         canvas.width = video.videoWidth;
 
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
- 
+
         img.src = canvas.toDataURL();
         detail.videoFrame = img.src;
 
