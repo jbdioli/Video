@@ -7,8 +7,9 @@ export interface VideoDetail {
   size?: number;
   videoHeight?: number;
   videoWidth?: number;
-  file?: File;
-  dataUrl?: string;
+  videoFrame?: string;
+  dataFile?: File;
+  dataString?: string;
 }
 
 @Component({
@@ -42,15 +43,15 @@ export class HomePage {
     this.videoDetail.name = this.videoBuffer.name;
     this.videoDetail.type = this.videoBuffer.type;
     this.videoDetail.size = this.videoBuffer.size;
-    this.videoDetail.file = this.videoBuffer;
+    this.videoDetail.dataFile = this.videoBuffer;
+    
 
+    this.convertToDataString(this.videoBuffer, this.videoDetail);
     this.videoMetadataReader(this.videoBuffer, this.videoDetail);
-
-    this.convertToDataUrl(this.videoBuffer, this.videoDetail);
   }
 
   // Metadata video reader
-  videoMetadataReader(buffer: File, storage: VideoDetail) {
+  videoMetadataReader(buffer: File, detail: VideoDetail) {
     const fileReader = new FileReader();
     const type = this.videoBuffer.type;
 
@@ -60,13 +61,34 @@ export class HomePage {
       const url = (URL || webkitURL).createObjectURL(blob);
       const video = document.createElement('video');  // create video element
 
+
       video.preload = 'metadata';                     // preload setting
       video.addEventListener('loadedmetadata', () => {
-        storage.duration = video.duration;
+        detail.duration = video.duration;
 
-        storage.videoHeight = video.videoHeight;
-        storage.videoWidth = video.videoWidth;
+
+        detail.videoHeight = video.videoHeight;
+        detail.videoWidth = video.videoWidth;
+
+
+        
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+
+        
+        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+ 
+        img.src = canvas.toDataURL();
+        detail.videoFrame = img.src;
+
+
+        console.log('img :', img);
       });
+
 
 
       video.src = url; // start video load
@@ -76,14 +98,13 @@ export class HomePage {
   }
 
   // File to dataUrl
-  convertToDataUrl(buffer: File, storage: VideoDetail) {
+  convertToDataString(buffer: File, detail: VideoDetail) {
     const fileReader = new FileReader();
     fileReader.onload = () => {
-      const dataUrl = fileReader.result.toString();
-      storage.dataUrl = dataUrl;
+      const dataString = fileReader.result.toString();
+      detail.dataString = dataString;
       this.flag = true;
     };
     fileReader.readAsDataURL(buffer);
   }
-
 }

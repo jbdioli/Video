@@ -24,7 +24,7 @@
 
 <div class="wrapper" *ngIf="flag">
   <video controls >
-    <source [src]="videoDetail.dataUrl" type="video/mp4">
+    <source [src]="videoDetail.dataString" type="video/mp4">
     unsupported video
   </video>
 </div>
@@ -32,6 +32,7 @@
 <div *ngIf="videoDetail.name">
   <p>Video name : {{videoDetail.name}} of {{videoDetail.duration}} seconde</p>
   <p>{{videoDetail.type}}, {{videoDetail.videoWidth}}px by {{videoDetail.videoHeight}}px</p>
+  <img [src]="videoDetail.videoFrame" />
 </div>
 
 
