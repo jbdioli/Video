@@ -1,4 +1,5 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
+import { LoadingController } from '@ionic/angular';
 
 export interface VideoDetail {
   name?: string;
@@ -19,13 +20,17 @@ export interface VideoDetail {
 })
 export class HomePage {
   @ViewChild('filePicker', {static: false}) filePickerRef: ElementRef<HTMLInputElement>;
+  @ViewChild('videoCtrl', {static: false}) videoCtrl: ElementRef;
 
   videoBuffer: File;
   videoDetail: VideoDetail = {};
 
   flag = false;
+  vPause = false;
+  vMute = false;
+  ctrlBar = false;
 
-  constructor() {}
+  constructor(private loadingCtrl: LoadingController) {}
 
   onPickVideo() {
     this.filePickerRef.nativeElement.click();
@@ -33,21 +38,26 @@ export class HomePage {
 
 
   onFileChosen(ev: Event) {
-    console.log('VideoFile : ', ev);
 
-    const files: FileList = (ev.target as HTMLInputElement).files;
+    this.loadingCtrl
+    .create({ keyboardClose: true, message: 'Loading video...' })
+    .then(loadingEl => {
+      loadingEl.present();
 
-    this.videoBuffer = files[0];
-    console.log('Video Buffer : ', this.videoBuffer);
+      const files: FileList = (ev.target as HTMLInputElement).files;
 
-    this.videoDetail.name = this.videoBuffer.name;
-    this.videoDetail.type = this.videoBuffer.type;
-    this.videoDetail.size = this.videoBuffer.size;
-    this.videoDetail.dataFile = this.videoBuffer;
-    
+      this.videoBuffer = files[0];
 
-    this.convertToDataString(this.videoBuffer, this.videoDetail);
-    this.videoMetadataReader(this.videoBuffer, this.videoDetail);
+      this.videoDetail.name = this.videoBuffer.name;
+      this.videoDetail.type = this.videoBuffer.type;
+      this.videoDetail.size = this.videoBuffer.size;
+      this.videoDetail.dataFile = this.videoBuffer;
+
+
+      this.convertToDataString(this.videoBuffer, this.videoDetail);
+      this.videoMetadataReader(this.videoBuffer, this.videoDetail);
+      loadingEl.dismiss();
+    });
   }
 
   // Metadata video reader
@@ -68,29 +78,29 @@ export class HomePage {
         detail.videoHeight = video.videoHeight;
         detail.videoWidth = video.videoWidth;
 
-
-        // get first video frame
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-
-
-        canvas.height = video.videoHeight;
-        canvas.width = video.videoWidth;
-
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        img.src = canvas.toDataURL();
-        detail.videoFrame = img.src;
-
-
-        console.log('img :', img);
+        this.getFrame(video, detail);
       });
 
       video.src = url; // start video load
 
     };
     fileReader.readAsArrayBuffer(buffer);
+  }
+
+  getFrame(videoBuffer: HTMLVideoElement, info: VideoDetail) {
+    // get first video frame
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+
+    canvas.height = info.videoHeight;
+    canvas.width = info.videoWidth;
+
+    ctx.drawImage(videoBuffer, 0, 0, canvas.width, canvas.height);
+
+    img.src = canvas.toDataURL();
+    info.videoFrame = img.src;
   }
 
   // File to string
@@ -103,4 +113,40 @@ export class HomePage {
     };
     fileReader.readAsDataURL(buffer);
   }
+
+  onVideo() {
+    if (!this.vPause) {
+    const play = this.videoCtrl.nativeElement.play();
+    play.then( () => {
+      this.vPause = true;
+    });
+    } else {
+
+      this.videoCtrl.nativeElement.pause();
+      this.vPause = false;
+    }
+
+  }
+
+  onAudio() {
+    const mute: boolean = this.videoCtrl.nativeElement.muted;
+
+    if (this.vMute) {
+      this.videoCtrl.nativeElement.muted = false;
+      this.vMute = false;
+    } else {
+      this.videoCtrl.nativeElement.muted = true;
+      this.vMute = true;
+    }
+
+  }
+
+  onMouseOver(ev: boolean) {
+    this.ctrlBar = ev;
+  }
+
+  onMouseLeave(ev: boolean) {
+    this.ctrlBar = ev;
+  }
+
 }

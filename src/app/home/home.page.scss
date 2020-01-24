@@ -8,8 +8,20 @@ input[type='file'] {
 }
 
 .wrapper {
-    margin: 0 auto;
+    z-index: 1;
     max-width: 40em;
+}
+
+.bar {
+    position: absolute;
+    z-index: 2;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+ion-button {
+    margin: 10px;
 }
 
 video {
@@ -18,5 +30,5 @@ video {
 
 img {
     width: 200px;
-    border: 1px solid black;
+    // border: 1px solid black;
 }

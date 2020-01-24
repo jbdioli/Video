@@ -22,11 +22,22 @@
 
 
 
-<div class="wrapper" *ngIf="flag">
-  <video controls >
+<div class="wrapper" *ngIf="flag" (mouseenter)="onMouseOver(true)" (mouseleave)="onMouseLeave(false)">
+  <video #videoCtrl>
     <source [src]="videoDetail.dataString" type="video/mp4">
-    unsupported video
   </video>
+  <span class="bar" *ngIf="ctrlBar">
+    <ion-button (click)="onVideo()">
+      <span *ngIf="vPause; then pause else play"></span>
+      <ng-template #play><ion-icon name="play"></ion-icon></ng-template>
+      <ng-template #pause><ion-icon name="pause"></ion-icon></ng-template>
+    </ion-button>
+    <ion-button (click)="onAudio()">
+      <span *ngIf="vMute; then mute else unMute"></span>
+      <ng-template #unMute><ion-icon name="volume-high"></ion-icon></ng-template>
+      <ng-template #mute><ion-icon name="volume-off"></ion-icon></ng-template>
+    </ion-button>
+  </span>
 </div>
 
 <div *ngIf="videoDetail.name">
