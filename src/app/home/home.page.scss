@@ -18,11 +18,19 @@ input[type='file'] {
     top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    ion-button {
+        width: 2.5em;
+        height: 2.5em;
+        margin: 1em;
+    }
+    
+    .button ion-icon {
+        font-size: 2em !important;
+    }
+
 }
 
-ion-button {
-    margin: 10px;
-}
 
 video {
     width: 100%;
